@@ -122,9 +122,9 @@ class Chef
       def parse_monit_summary(monit_summary_stdout)
         process_name_to_status = {}
         monit_summary_stdout.split("\n").each do |line|
-          # The process status can include letters, spaces, and dashes.
-          if line =~ /^Process\s+'(\S+)'\s+([A-Za-z -]+)$/
-            process_name_to_status[$1] = $2.strip
+          service_name, status, type = line.split('  ').reject { |i| i.size < 2 }.map(&:strip)
+          if type == 'Process'
+            process_name_to_status[service_name] = status
           end
         end
         Chef::Log.debug(
